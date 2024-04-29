@@ -30,7 +30,7 @@ export function createSvgContainer(
 	return app.append('svg').attr('width', svgWidth).attr('height', svgHeight)
 }
 
-/* generate random test scores */
+/* generate random test scores between 70 - 100 */
 export function generateRandomTestScores() {
 	return Array.from({ length: 10 }, () => Math.floor(Math.random() * 31) + 70)
 }
