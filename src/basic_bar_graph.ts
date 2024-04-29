@@ -1,17 +1,25 @@
 import * as d3 from 'd3'
-import { app, margin, svgHeight, svgWidth } from './constants'
-import {
-	createSvgContainer,
-	generateRandomTestScores,
-} from './helper_functions'
+import { app, margin } from './constants'
+import { createSvgContainer } from './helper_functions'
 
-export default function createBasicBarGraph() {
-	const data = generateRandomTestScores() // Generate random test scores
+type BasicBarGraphProps = {
+	title: string
+	xAxisLabel: string
+	yAxisLabel: string
+	data: number[]
+	svgWidth?: number
+	svgHeight?: number
+}
+
+export default function createBasicBarGraph(props: BasicBarGraphProps) {
+	let { title, xAxisLabel, yAxisLabel, data, svgWidth, svgHeight } = props
+	svgWidth = svgWidth || 800 // set default width if not provided
+	svgHeight = svgHeight || 800 // set default height if not provided
 	const svgBasicBarGraph = createSvgContainer(app, svgWidth, svgHeight) // create SVG container
 
 	svgBasicBarGraph // Append a group element to the SVG
 		.attr('width', svgWidth + margin.left + margin.right) // Add margins to the SVG
-		.attr('height', svgHeight + margin.top + margin.bottom) // Add margins to the SVG
+		.attr('height', svgHeight + margin.top + margin.bottom + 25) // Add margins to the SVG
 
 	const g = svgBasicBarGraph
 		.append('g') // Append a group element to the SVG
@@ -21,7 +29,7 @@ export default function createBasicBarGraph() {
 
 	const xScale = d3 // Create x-scale for the bar graph
 		.scaleBand() // Create a band scale
-		.domain(data.map((d, i) => i)) // Create an array of indexes for the data
+		.domain(data.map((_d, i) => i.toString())) // Create an array of indexes for the data
 		.range([0, svgWidth]) // Set the range of the x-axis
 		.padding(0.2) // Add padding between the bars
 
@@ -32,7 +40,7 @@ export default function createBasicBarGraph() {
 		.attr('text-anchor', 'middle') // center the text
 		.style('font-size', '20px') // set the font size
 		.style('fill', 'white') // set the font color
-		.text('Basic Bar Graph SVG') // set the text
+		.text(title) // set the text
 
 	g.selectAll('rect') // Create the bars for the bar graph
 		.data(data) // Bind data to the bars
@@ -41,14 +49,14 @@ export default function createBasicBarGraph() {
 		.attr('y', (d) => yScale(d)) // Set the y position of the bar
 		.attr('height', (d) => svgHeight - yScale(d)) // Set the height of the bar
 		.attr('width', xScale.bandwidth()) // Set the width of the bar
-		.attr('transform', (d, i) => `translate(${xScale(i)}, 0)`) // Set the x position of the bar
+		.attr('transform', (_d, i) => `translate(${xScale(i.toString())}, 0)`) // Set the x position of the bar
 
 	g.selectAll('text.bar') // Add text to bars
 		.data(data) // Bind data to the text
 		.enter() // Create new text
 		.append('text') // Append text for each data point
 		.attr('class', 'fakeClass') // Set the class of the text
-		.attr('x', (_d, i) => xScale(i) + xScale.bandwidth() / 2) // Set the x position of the text
+		.attr('x', (_d, i) => xScale(i.toString())! + xScale.bandwidth() / 2) // Set the x position of the text
 		.attr('y', (d) => yScale(d) + 20) // Set the y position of the text
 		.attr('text-anchor', 'middle') // Center the text
 		.attr('fill', 'white') // Set the color of the text
@@ -65,7 +73,7 @@ export default function createBasicBarGraph() {
 		.attr('dy', '1em') // Center the label
 		.attr('fill', 'white') // Set the color of the label
 		.style('text-anchor', 'middle') // Center the label
-		.text('Grade') // Set the text of the label
+		.text(yAxisLabel) // Set the text of the label
 
 	const xAxis = d3.axisBottom(xScale).tickFormat((d) => `Test ${d + 1}`) // Create x-axis and append it to the group
 	g.append('g').attr('transform', `translate(0, ${svgHeight})`).call(xAxis)
@@ -76,5 +84,5 @@ export default function createBasicBarGraph() {
 		.attr('dy', '1em') // Center the label
 		.attr('fill', 'white') // Set the color of the label
 		.style('text-anchor', 'middle') // Center the label
-		.text('Test Scores') // Set the text of the label
+		.text(xAxisLabel) // Set the text of the label
 }

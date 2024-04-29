@@ -1,3 +1,5 @@
+import { BaseType } from 'd3'
+
 /* generate random percentages */
 export function generateRandomPercentages() {
 	let percentages = []
@@ -20,7 +22,11 @@ export function generateRandomPercentages() {
 }
 
 /* create a SVG container */
-export function createSvgContainer(app, svgWidth, svgHeight) {
+export function createSvgContainer(
+	app: d3.Selection<BaseType, unknown, HTMLElement, any>,
+	svgWidth: number,
+	svgHeight: number,
+) {
 	return app.append('svg').attr('width', svgWidth).attr('height', svgHeight)
 }
 
